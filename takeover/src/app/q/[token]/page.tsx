@@ -33,17 +33,17 @@ export default function ClientAcceptPage() {
       const invoice = state.invoices.find((i) => i.quote_id === quote.id);
       if (invoice) {
         // Redirect directly without animation if already accepted
-        router.push(`/invoices/${invoice.id}`);
+        router.push(`/pay/${invoice.id}`);
       }
     }
   }, [quote, state.invoices, router]);
 
   if (!quote || !deal) {
     return (
-      <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center p-4">
-        <div className="bg-white border border-[#E6DFD5] p-6 rounded-xl max-w-sm w-full text-center space-y-3">
-          <h2 className="text-lg font-bold text-rose-800">Proposal Expired or Invalid</h2>
-          <p className="text-xs text-[#6F6D6A]">This link is incorrect or the quote is no longer active.</p>
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-4">
+        <div className="p-10 text-center glass rounded-3xl animate-in fade-in max-w-md mx-auto">
+          <h2 className="text-2xl font-black text-rose-600 tracking-tight">Proposal Expired or Invalid</h2>
+          <p className="text-sm font-medium text-muted-foreground mt-2">This link is incorrect or the quote is no longer active.</p>
         </div>
       </div>
     );
@@ -63,10 +63,10 @@ export default function ClientAcceptPage() {
           // Trigger the atomic accept transaction
           const result = acceptQuote(token, deal.client_name);
           
-          // Redirect to invoice page
+          // Redirect to client payment page
           setTimeout(() => {
             if (result) {
-              router.push(`/invoices/${result.invoice.id}`);
+              router.push(`/pay/${result.invoice.id}`);
             }
           }, 800);
           
@@ -78,67 +78,68 @@ export default function ClientAcceptPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] py-6 px-4 flex flex-col justify-center items-center">
+    <div className="min-h-screen bg-neutral-50/50 py-10 px-4 flex flex-col justify-center items-center">
       {/* Mobile viewport simulator container */}
-      <div className="w-full max-w-[420px] bg-white border border-[#E6DFD5] rounded-2xl shadow-md overflow-hidden flex flex-col">
+      <div className="w-full max-w-md glass rounded-[2rem] shadow-[0_8px_40px_rgb(0,0,0,0.06)] overflow-hidden flex flex-col animate-in slide-in-from-bottom-8 duration-700 fade-in border border-border/40">
         
         {/* Header banner */}
-        <div className="bg-[#C85A17] p-5 text-white space-y-1 text-center">
-          <span className="text-[10px] font-bold uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded">Proposal</span>
-          <h1 className="text-xl font-bold tracking-tight">{state.business.brand_name}</h1>
-          <p className="text-[10px] text-white/80">{state.business.legal_name}</p>
+        <div className="bg-neutral-900 p-8 text-white space-y-1.5 text-center relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-50" />
+          <span className="relative text-[10px] font-black uppercase tracking-[0.2em] bg-white/10 px-3 py-1 rounded-full border border-white/10 shadow-sm backdrop-blur-sm">Proposal</span>
+          <h1 className="relative text-2xl font-black tracking-tighter mt-3">{state.business.brand_name}</h1>
+          <p className="relative text-[11px] font-medium text-neutral-400">{state.business.legal_name}</p>
         </div>
 
         {/* Client details card */}
-        <div className="p-4 border-b border-[#E6DFD5] bg-[#FAF8F5]/30 space-y-3">
+        <div className="p-6 border-b border-border/60 bg-neutral-50/80 space-y-5">
           <div className="flex justify-between items-start">
-            <div className="space-y-0.5">
-              <span className="text-[9px] font-bold text-[#6F6D6A] uppercase tracking-wider">Prepared For</span>
-              <h4 className="font-bold text-sm text-[#1C1B19]">{deal.client_name}</h4>
-              <p className="text-[10px] text-[#6F6D6A]">{deal.client_phone}</p>
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Prepared For</span>
+              <h4 className="font-black text-base text-foreground tracking-tight">{deal.client_name}</h4>
+              <p className="text-xs font-medium text-muted-foreground">{deal.client_phone}</p>
             </div>
-            <div className="text-right space-y-0.5">
-              <span className="text-[9px] font-bold text-[#6F6D6A] uppercase tracking-wider">Quote ID</span>
-              <p className="font-bold text-xs text-[#1C1B19]">{quote.number}</p>
-              <p className="text-[9px] text-rose-700 font-semibold">Valid till: {new Date(quote.valid_until).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</p>
+            <div className="text-right space-y-1.5">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Quote ID</span>
+              <p className="font-black text-sm text-foreground">{quote.number}</p>
+              <p className="text-[10px] text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded border border-rose-100">Valid till: {new Date(quote.valid_until).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</p>
             </div>
           </div>
 
-          <div className="bg-white border border-[#E6DFD5] rounded-xl p-3 flex justify-around text-center text-xs">
-            <div className="space-y-0.5">
-              <span className="text-[9px] font-bold text-[#6F6D6A] uppercase">Timeline</span>
-              <p className="font-semibold text-[#1C1B19] flex items-center justify-center">
-                <Clock className="w-3.5 h-3.5 mr-1 text-[#C85A17]" /> {deal.timeline_days} Days
+          <div className="bg-white border border-border/50 rounded-2xl p-4 flex justify-around text-center text-xs shadow-[0_2px_10px_rgb(0,0,0,0.02)]">
+            <div className="space-y-1">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Timeline</span>
+              <p className="font-black text-foreground flex items-center justify-center">
+                <Clock className="w-4 h-4 mr-1.5 text-neutral-400" /> {deal.timeline_days} Days
               </p>
             </div>
-            <div className="border-r border-[#E6DFD5]" />
-            <div className="space-y-0.5">
-              <span className="text-[9px] font-bold text-[#6F6D6A] uppercase">GST Ready</span>
-              <p className="font-semibold text-emerald-700 flex items-center justify-center">
-                <ShieldCheck className="w-3.5 h-3.5 mr-1 text-emerald-600" /> Yes
+            <div className="border-r border-border/60" />
+            <div className="space-y-1">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">GST Ready</span>
+              <p className="font-black text-emerald-700 flex items-center justify-center">
+                <ShieldCheck className="w-4 h-4 mr-1.5 text-emerald-600" /> Yes
               </p>
             </div>
           </div>
         </div>
 
         {/* Project details */}
-        <div className="p-5 flex-1 space-y-4">
-          <div className="space-y-1">
-            <h3 className="font-bold text-sm text-[#1C1B19]">{deal.project_title}</h3>
-            <p className="text-xs text-[#6F6D6A] leading-relaxed">{deal.scope_summary}</p>
+        <div className="p-6 flex-1 space-y-6">
+          <div className="space-y-1.5">
+            <h3 className="font-black text-base text-foreground tracking-tight">{deal.project_title}</h3>
+            <p className="text-[13px] text-muted-foreground leading-relaxed font-medium">{deal.scope_summary}</p>
           </div>
 
           {/* Line items list */}
-          <div className="space-y-2 border-t border-[#E6DFD5] pt-3">
-            <h5 className="text-[9px] font-bold text-[#6F6D6A] uppercase tracking-wider">Estimated Costs</h5>
-            <div className="space-y-2">
+          <div className="space-y-4 border-t-2 border-border/60 pt-5">
+            <h5 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Estimated Costs</h5>
+            <div className="space-y-4">
               {deal.line_items.map((item) => (
-                <div key={item.id} className="flex justify-between items-start text-xs">
-                  <div className="space-y-0.5 max-w-[70%]">
-                    <p className="font-bold text-[#1C1B19]">{item.description}</p>
-                    <p className="text-[10px] text-[#6F6D6A]">Qty: {item.quantity} &middot; GST {item.tax_rate_bps / 100}%</p>
+                <div key={item.id} className="flex justify-between items-start text-sm">
+                  <div className="space-y-1 max-w-[70%]">
+                    <p className="font-black text-foreground tracking-tight">{item.description}</p>
+                    <p className="text-[11px] font-medium text-muted-foreground">Qty: {item.quantity} &middot; GST {item.tax_rate_bps / 100}%</p>
                   </div>
-                  <span className="font-bold text-[#1C1B19]">
+                  <span className="font-black text-foreground">
                     {formatINRPaise(item.unit_price_paise * item.quantity)}
                   </span>
                 </div>
@@ -147,30 +148,32 @@ export default function ClientAcceptPage() {
           </div>
 
           {/* Pricing Summary */}
-          <div className="border-t border-[#E6DFD5] pt-3 space-y-1.5 text-xs">
-            <div className="flex justify-between items-center text-[#6F6D6A]">
-              <span>Subtotal (Base Value)</span>
-              <span className="font-semibold">{formatINRPaise(quote.subtotal_paise)}</span>
+          <div className="border-t-2 border-border pt-5 space-y-2.5 text-xs font-medium">
+            <div className="flex justify-between items-center text-muted-foreground">
+              <span>Subtotal <span className="text-[10px] uppercase">(Base Value)</span></span>
+              <span className="font-bold text-foreground">{formatINRPaise(quote.subtotal_paise)}</span>
             </div>
-            <div className="flex justify-between items-center text-[#6F6D6A]">
-              <span>GST (18%)</span>
-              <span className="font-semibold">{formatINRPaise(quote.tax_paise)}</span>
+            <div className="flex justify-between items-center text-muted-foreground">
+              <span>GST <span className="text-[10px] uppercase">(18%)</span></span>
+              <span className="font-bold text-foreground">{formatINRPaise(quote.tax_paise)}</span>
             </div>
-            <div className="border-t border-[#E6DFD5]/50 pt-2 flex justify-between items-center text-sm font-bold text-[#1C1B19]">
-              <span>Total Quotation Cost</span>
-              <span className="text-base text-[#C85A17]">{formatINRPaise(quote.total_paise, true)}</span>
+            <div className="border-t border-border/80 pt-4 mt-2 flex justify-between items-center text-sm font-black text-foreground">
+              <span className="uppercase tracking-widest text-[11px]">Total Quotation Cost</span>
+              <span className="text-xl text-neutral-900">{formatINRPaise(quote.total_paise, true)}</span>
             </div>
           </div>
         </div>
 
         {/* Accept Button Footer */}
-        <div className="p-4 border-t border-[#E6DFD5] bg-[#FAF8F5]/30">
+        <div className="p-6 border-t border-border/60 bg-neutral-50/50">
           <button
             onClick={handleAccept}
-            className="w-full py-3 px-4 bg-[#C85A17] hover:bg-[#A94A10] text-white font-bold rounded-xl transition-colors shadow-sm flex items-center justify-center space-x-2"
+            className="group relative w-full py-4 px-6 bg-neutral-900 hover:bg-neutral-800 text-white font-bold rounded-2xl transition-all shadow-[0_4px_14px_0_rgb(0,0,0,0.15)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 active:scale-95 flex items-center justify-center space-x-2 overflow-hidden"
           >
-            <FileCheck className="w-4.5 h-4.5" />
-            <span>Accept Proposal & Generate Invoice</span>
+            {/* Shimmer effect inside button */}
+            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-shimmer" />
+            <FileCheck className="w-5 h-5 relative z-10" />
+            <span className="relative z-10 text-sm tracking-wide">Accept Proposal & Generate Invoice</span>
           </button>
         </div>
 
@@ -178,15 +181,15 @@ export default function ClientAcceptPage() {
 
       {/* Acceptance Progress Overlay Modal */}
       {isAccepting && (
-        <div className="fixed inset-0 z-50 bg-[#1C1B19]/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white border border-[#E6DFD5] rounded-xl max-w-sm w-full p-6 space-y-4 shadow-xl">
-            <div className="flex items-center space-x-2">
-              <Loader2 className="w-5 h-5 text-[#C85A17] animate-spin" />
-              <h3 className="font-bold text-sm text-[#1C1B19]">Accepting Quotation...</h3>
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="bg-white rounded-[2rem] max-w-sm w-full p-8 space-y-6 shadow-2xl border border-white/20">
+            <div className="flex items-center space-x-3 pb-4 border-b border-border/50">
+              <Loader2 className="w-6 h-6 text-neutral-900 animate-spin" />
+              <h3 className="font-black text-lg text-foreground tracking-tight">Accepting Quotation...</h3>
             </div>
             
             {/* Steps checklist */}
-            <div className="space-y-3 pt-2">
+            <div className="space-y-4 pt-2">
               {steps.map((step, idx) => {
                 const isDone = idx < currentStep;
                 const isActive = idx === currentStep;
@@ -194,21 +197,21 @@ export default function ClientAcceptPage() {
                 return (
                   <div
                     key={idx}
-                    className={`flex items-center space-x-3 transition-opacity duration-300 ${
-                      isDone || isActive ? 'opacity-100' : 'opacity-30'
+                    className={`flex items-center space-x-4 transition-all duration-300 ${
+                      isDone || isActive ? 'opacity-100 translate-x-0' : 'opacity-20 translate-x-4'
                     }`}
                   >
                     {isDone ? (
                       <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                     ) : isActive ? (
-                      <Loader2 className="w-5 h-5 text-[#C85A17] animate-spin shrink-0" />
+                      <Loader2 className="w-5 h-5 text-neutral-900 animate-spin shrink-0" />
                     ) : (
-                      <div className="w-5 h-5 rounded-full border border-[#E6DFD5] shrink-0" />
+                      <div className="w-5 h-5 rounded-full border-2 border-border shrink-0" />
                     )}
                     
-                    <span className={`text-xs font-medium ${
-                      isDone ? 'text-emerald-800 line-through' :
-                      isActive ? 'text-[#1C1B19] font-bold' : 'text-[#6F6D6A]'
+                    <span className={`text-sm ${
+                      isDone ? 'text-emerald-700 font-medium line-through decoration-emerald-200' :
+                      isActive ? 'text-foreground font-black tracking-tight' : 'text-muted-foreground font-medium'
                     }`}>
                       {idx === 0 && isDone ? 'Quotation accepted' : step}
                     </span>
@@ -218,9 +221,11 @@ export default function ClientAcceptPage() {
             </div>
 
             {currentStep === steps.length - 1 && (
-              <p className="text-[10px] text-emerald-700 font-semibold text-center bg-emerald-50 border border-emerald-100 py-1.5 px-3 rounded-lg animate-pulse">
-                Invoice generated! Launching payment dashboard...
-              </p>
+              <div className="pt-4 animate-in slide-in-from-bottom-2 fade-in">
+                <p className="text-xs text-emerald-800 font-bold text-center bg-emerald-50 border border-emerald-200 py-3 px-4 rounded-xl animate-pulse shadow-inner">
+                  Invoice generated! Launching payment gateway...
+                </p>
+              </div>
             )}
           </div>
         </div>
