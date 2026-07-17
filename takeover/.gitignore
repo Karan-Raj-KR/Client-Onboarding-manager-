@@ -1,6 +1,4 @@
-node_modules/
-.next/
-out/
-build/
 .env.local
 *.pem
+# Ignore large binary files to bypass GitHub 100MB limit
+*.node
