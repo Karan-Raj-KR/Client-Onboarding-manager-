@@ -17,6 +17,7 @@ export default function QuotePreview() {
 
   const [copied, setCopied] = useState(false);
   const [publicUrl, setPublicUrl] = useState('');
+  const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
     if (quote && typeof window !== 'undefined') {
@@ -52,6 +53,37 @@ export default function QuotePreview() {
   // Open window print dialog
   const handlePrint = () => {
     window.print();
+  };
+
+  // Send Email via API
+  const handleSendEmail = async () => {
+    const email = window.prompt("Enter client's email address to send this quotation:");
+    if (!email) return;
+
+    setIsSending(true);
+    try {
+      const res = await fetch('/api/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: email,
+          subject: `Quotation #${quote.number} from ${state.business.brand_name}`,
+          quoteNumber: quote.number,
+          quoteUrl: publicUrl,
+          clientName: deal.client_name,
+          brandName: state.business.brand_name,
+        }),
+      });
+      if (res.ok) {
+        alert('Email sent successfully!');
+      } else {
+        alert('Failed to send email. Ensure you are using a verified Resend address (like your own email) on the free tier.');
+      }
+    } catch (e) {
+      alert('Error sending email.');
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -99,11 +131,20 @@ export default function QuotePreview() {
               <span>Download PDF / Print</span>
             </button>
 
+            <button
+              onClick={handleSendEmail}
+              disabled={isSending}
+              className="inline-flex items-center space-x-1.5 px-5 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-bold rounded-full transition-all shadow-[0_4px_14px_0_rgb(0,0,0,0.2)] hover:-translate-y-0.5 active:scale-95 disabled:opacity-50"
+            >
+              <FileText className="w-4 h-4" />
+              <span>{isSending ? 'Sending...' : 'Email Client'}</span>
+            </button>
+
             <a
               href={`/q/${quote.public_token}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center space-x-1.5 px-5 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-bold rounded-full transition-all shadow-[0_4px_14px_0_rgb(0,0,0,0.2)] hover:-translate-y-0.5 active:scale-95"
+              className="inline-flex items-center space-x-1.5 px-5 py-2.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-900 border border-neutral-200 text-xs font-bold rounded-full transition-all shadow-sm active:scale-95"
             >
               <span>Test Client View</span>
               <ExternalLink className="w-4 h-4 ml-0.5" />

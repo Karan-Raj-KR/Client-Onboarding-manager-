@@ -17,6 +17,15 @@ export default function InvoicePage() {
   const deal = state.deals.find((d) => d.id === quote?.deal_id);
 
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [publicUrl, setPublicUrl] = useState('');
+
+  React.useEffect(() => {
+    if (invoice && typeof window !== 'undefined') {
+      const origin = window.location.origin;
+      setPublicUrl(`${origin}/pay/${invoice.id}`);
+    }
+  }, [invoice]);
 
   if (!invoice || !quote || !deal) {
     return (
@@ -46,6 +55,37 @@ export default function InvoicePage() {
 
   const handlePrint = () => {
     window.print();
+  };
+
+  // Send Email via API
+  const handleSendEmail = async () => {
+    const email = window.prompt("Enter client's email address to send this invoice:");
+    if (!email) return;
+
+    setIsSending(true);
+    try {
+      const res = await fetch('/api/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: email,
+          subject: `Invoice #${invoice.number} from ${state.business.brand_name}`,
+          quoteNumber: invoice.number, // Reusing field
+          quoteUrl: publicUrl,
+          clientName: deal.client_name,
+          brandName: state.business.brand_name,
+        }),
+      });
+      if (res.ok) {
+        alert('Email sent successfully!');
+      } else {
+        alert('Failed to send email. Ensure you are using a verified Resend address (like your own email) on the free tier.');
+      }
+    } catch (e) {
+      alert('Error sending email.');
+    } finally {
+      setIsSending(false);
+    }
   };
 
   // Mock QR code SVG for clean vector display
@@ -85,6 +125,15 @@ export default function InvoicePage() {
             >
               <Printer className="w-4 h-4" />
               <span>Download PDF / Print</span>
+            </button>
+
+            <button
+              onClick={handleSendEmail}
+              disabled={isSending}
+              className="inline-flex items-center space-x-1.5 px-5 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-bold rounded-full transition-all shadow-[0_4px_14px_0_rgb(0,0,0,0.2)] hover:-translate-y-0.5 active:scale-95 disabled:opacity-50"
+            >
+              <ArrowLeft className="w-4 h-4 rotate-135" /> {/* Use an icon or leave empty, reusing Arrow for now but let's just use text if no generic mail icon is imported */}
+              <span>{isSending ? 'Sending...' : 'Email Client'}</span>
             </button>
 
             {invoice.status !== 'Paid' && (
