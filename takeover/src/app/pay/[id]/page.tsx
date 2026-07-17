@@ -196,6 +196,28 @@ export default function ClientPaymentPage() {
               </div>
             </div>
 
+            {/* Signatures */}
+            <div className="flex justify-between items-end border-t-2 border-border pt-8 mt-12 mb-4">
+              <div className="space-y-4 w-48">
+                <div className="border-b border-border/80 pb-1">
+                  <input type="text" placeholder="Owner Signature..." className="w-full bg-transparent outline-none text-foreground font-signature text-2xl placeholder:text-muted-foreground/50 placeholder:font-sans placeholder:text-sm" />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Authorized By</p>
+                  <p className="font-bold text-sm text-foreground">{state.business.brand_name}</p>
+                </div>
+              </div>
+              <div className="space-y-4 w-48">
+                <div className="border-b border-border/80 pb-1">
+                  <input type="text" placeholder="Client Signature..." className="w-full bg-transparent outline-none text-foreground font-signature text-2xl placeholder:text-muted-foreground/50 placeholder:font-sans placeholder:text-sm" />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Accepted By</p>
+                  <input type="text" placeholder="Client Name" defaultValue={deal.client_name} className="w-full font-bold text-sm text-foreground bg-transparent outline-none placeholder:text-muted-foreground/50" />
+                </div>
+              </div>
+            </div>
+
             {/* Footer */}
             <div className="border-t border-dashed border-border/80 pt-8 mt-12 text-center text-muted-foreground text-[10px] space-y-1.5 font-medium">
               <p>This is a computer-generated GST-ready Tax Invoice.</p>
