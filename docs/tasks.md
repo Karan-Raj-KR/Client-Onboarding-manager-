@@ -11,7 +11,7 @@ Status: [ ] todo · [~] in progress · [x] done. One owner per task. Add rows, n
 - [ ] Demo cache builder (DEMO_MODE)
 
 ## Havinash (frontend)
-- [ ] Next.js scaffold in /app, shadcn setup, mobile-first shell (380px)
+- [x] Next.js scaffold in /app, shadcn setup, mobile-first shell (380px)
 - [ ] Onboarding flow (5 steps incl. voice note record/transcribe)
 - [ ] Daily action card UI (copy, wa.me, share intent, posted/skipped)
 - [ ] Plan diff view (week 1 vs week 2, "why it changed")
